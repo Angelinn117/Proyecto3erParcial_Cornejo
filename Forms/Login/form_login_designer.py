@@ -1,12 +1,40 @@
+import os
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 from tkinter.font import BOLD
 import Util.generic as utl
+from Forms.Register.form_register_designer import FormRegisterDesigner
 
 class FormLoginDesigner:
 
+    global FormLoginDesigner
+    global usuario
+    global password
+
+
     def verificar(self):
         pass
+
+    def verificacion_login(self):
+
+        log_usuario = self.usuario.get()
+        log_contra = self.password.get()
+
+        #Seguir checando estas cosas que marcan error:
+        #usuario_entrada2.delete(0, END)
+        #contra_entrada2.delete(0, END)
+
+        lista_archivos = os.listdir("./Registers/UserInformation_NameAndPassword/")  # Vamos a importar la lista de archivos con la libreria os
+        if log_usuario in lista_archivos:  # Comparamos los archivos con el que nos interesa
+            archivo2 = open("./Registers/UserInformation_NameAndPassword/"+log_usuario, "r")  # Abrimos el archivo en modo lectura
+            verificacion = archivo2.read().splitlines()  # leera las lineas dentro del archivo ignorando el resto
+            if log_contra in verificacion:
+                messagebox.showinfo(message="Inicio de sesión exitoso.", title="¡Éxito!")
+            else:
+                messagebox.showerror(message="Contraseña incorrecta.", title="Error")
+
+        else:
+            messagebox.showerror(message="Usuario no registrado.", title="Error")
 
     def __init__(self):
         self.ventana = tk.Tk()
@@ -54,9 +82,9 @@ class FormLoginDesigner:
         self.password.config(show="*")
 
         inicio = tk.Button(frame_form_fill, text="Iniciar sesión", font=('Times', 15, BOLD), bg='#45474B', bd=0,
-                           fg="#fff", command=self.verificar)
+                           fg="#fff", command=self.verificacion_login)
         inicio.pack(fill=tk.X, padx=20, pady=15)
-        inicio.bind("<Return>", (lambda event: self.verificar()))
+
 
         #CODIGO EXPERIMENTAL (Le falta el "Command" para indicarle que hacer al pulsar el botón:
         #Botón "Reconocimiento Facial":
