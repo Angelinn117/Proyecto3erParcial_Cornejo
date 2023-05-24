@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from tkinter.font import BOLD
 import Util.generic as utl
+from Forms.Master.form_master import MasterPanel
 from Forms.Register.form_register_designer import FormRegisterDesigner
 
 class FormLoginDesigner:
@@ -30,6 +31,7 @@ class FormLoginDesigner:
             verificacion = archivo2.read().splitlines()  # leera las lineas dentro del archivo ignorando el resto
             if log_contra in verificacion:
                 messagebox.showinfo(message="Inicio de sesión exitoso.", title="¡Éxito!")
+                MasterPanel()
             else:
                 messagebox.showerror(message="Contraseña incorrecta.", title="Error")
 
