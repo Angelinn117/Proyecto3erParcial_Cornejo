@@ -8,9 +8,6 @@ class FormLoginDesigner:
     def verificar(self):
         pass
 
-    def userRegister(self):
-        pass
-
     def __init__(self):
         self.ventana = tk.Tk()
         self.ventana.title('Inicio de sesion')
@@ -19,7 +16,7 @@ class FormLoginDesigner:
         self.ventana.resizable(width=0, height=0)
         utl.centrar_ventana(self.ventana, 800, 500)
 
-        logo = utl.leer_imagen("./Imagenes/LogoAngelinn.png", (330, 330))
+        logo = utl.leer_imagen("./Imagenes/LogoAngelinn.png", (300, 300))
         # frame_logo
         frame_logo = tk.Frame(self.ventana, bd=0, width=300, relief=tk.SOLID, padx=10, pady=10, bg='#000000')
         frame_logo.pack(side="left", expand=tk.YES, fill=tk.BOTH)
@@ -74,11 +71,9 @@ class FormLoginDesigner:
                                          fg="#fff")
         reconocimientoVoz.pack(fill=tk.X, padx=20, pady=15)
 
-        inicio = tk.Button(frame_form_fill, text="Registrarse", font=('Times', 15, BOLD), bg='#45474B', bd=0,
-                           fg="#fff", command=self.verificar)
-        inicio.pack(fill=tk.X, padx=20, pady=15)
-
-
+        register = tk.Button(frame_form_fill, text="Registrarse", font=('Times', 15, BOLD), bg='#45474B', bd=0,
+                           fg="#fff", command=self.abrirVentanaRegistro)
+        register.pack(fill=tk.X, padx=20, pady=15)
 
         # end frame_form_fill
         self.ventana.mainloop()
