@@ -1,4 +1,4 @@
 from Forms.Login.form_login import FormLogin
 
-#MasterPanel()
+# Llamado de la ventana Login al ejecutar el programa:
 FormLogin()

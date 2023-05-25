@@ -1,12 +1,11 @@
 import tkinter as tk
-from tkinter import ttk, messagebox, END
-from tkinter.font import BOLD
-
 import cv2
+import Util.generic as utl
+
+from tkinter import ttk, messagebox
+from tkinter.font import BOLD
 from matplotlib import pyplot
 from mtcnn import MTCNN
-
-import Util.generic as utl
 
 class FormRegisterDesigner(tk.Toplevel):
 
@@ -18,55 +17,52 @@ class FormRegisterDesigner(tk.Toplevel):
     global pantalla1
 
     # Método encargado de registrar usuarios únicamente con nombre de usuarios y contraseñas:
-    def registrar_usuario(self):
+    def userRegister(self):
 
-        self.validarCampoUsuario()  # Validar el campo de usuario antes de continuar
+        self.fieldsValidation()
 
-        # Si el campo de usuario no es válido, se mostrará un mensaje de error y no se ejecutará el resto del código
         if not self.usuario_valido:
             return
 
-        usuario_info = self.usuario.get()  # Obetnemos la informacion alamcenada en usuario
-        contra_info = self.contra.get()  # Obtenemos la informacion almacenada en contra
+        nameUser = self.usuario.get()
+        passwordUser = self.contra.get()
 
-        archivo = open("./Registers/UserInformation_NameAndPassword/"+usuario_info, "w")  # Abriremos la informacion en modo escritura
-        archivo.write(usuario_info + "\n")  # escribimos la info
-        archivo.write(contra_info)
-        archivo.close()
+        file = open("./Registers/UserInformation_NameAndPassword/"+nameUser, "w")
+        file.write(nameUser + "\n" + passwordUser)
+        file.close()
 
-        # Limpiaremos los text variable (de igual forma dan error, checar eso):
-        #usuario_entrada.delete(0, END)
-        #contra_entrada.delete(0, END)
-
-        # Ahora le diremos al usuario que su registro ha sido exitoso
         messagebox.showinfo(message="Registro exitoso.", title="¡Éxito!")
+        self.destroy()
 
-    def validarCampoUsuario(self):
+    # Método encargado de no permitir campos vacios en "Nombre" y "Contraseña" del registro:
+    def fieldsValidation(self):
         self.grab_set()
         nombre_usuario = self.usuario.get()
+        contra_usuario = self.contra.get()
 
-        if nombre_usuario.strip() == "":
-            messagebox.showerror(message="Por favor, ingrese un nombre de usuario.", title="Campo Vacío")
-            self.usuario_valido = False  # Indicar que el usuario no es válido
+        if nombre_usuario.strip() == "" or contra_usuario.strip() == "":
+            messagebox.showerror(message="Por favor, ingrese todos los campos.", title="Campo Vacío")
+            self.usuario_valido = False
+            self.contra_usuario = False
         else:
-            self.usuario_valido = True  # Indicar que el usuario es válido
+            self.usuario_valido = True
+            self.contra_usuario = True
 
     # Registro de datos:
-    def registro(self):
-        global usuario
-        global contra  # Globalizamos las variables para usarlas en otras funciones
-        global usuario_entrada
-        global contra_entrada
-        global pantalla1
+    # def registro(self):
+    #     global usuario
+    #     global contra  # Globalizamos las variables para usarlas en otras funciones
+    #     global usuario_entrada
+    #     global contra_entrada
+    #     global pantalla1
 
-    def registro_facial(self):
-        self.validarCampoUsuario()  # Validar el campo de usuario antes de continuar
+    # Método encargado de detectar y almacenar rostros de los usuarios:
+    def facialRegistration(self):
+        self.fieldsValidation()
 
-        # Si el campo de usuario no es válido, se mostrará un mensaje de error y no se ejecutará el resto del código
         if not self.usuario_valido:
             return
 
-        # Resto del código de registro facial aquí
         cap = cv2.VideoCapture(0)  # Elegimos la cámara con la que vamos a hacer la detección
         while True:
             ret, frame = cap.read()  # Leemos el video
@@ -90,9 +86,8 @@ class FormRegisterDesigner(tk.Toplevel):
         cap.release()  # Cerramos
         cv2.destroyAllWindows()
 
-
         # Detección de rostro y exportación de pixeles:
-        def reg_rostro(img, lista_resultados):
+        def facialDetection(img, lista_resultados):
             data = pyplot.imread(img)
             for i in range(len(lista_resultados)):
                 x1, y1, ancho, alto = lista_resultados[i]['box']
@@ -105,13 +100,15 @@ class FormRegisterDesigner(tk.Toplevel):
                 cv2.imwrite("./Imagenes/ImagenesRegistroFacial/"+usuario_img + ".jpg", cara_reg)
                 pyplot.imshow(data[y1:y2, x1:x2])
 
-
         img = "./Imagenes/ImagenesRegistroFacial/"+usuario_img + ".jpg"
         pixeles = pyplot.imread(img)
         detector = MTCNN()
         caras = detector.detect_faces(pixeles)
-        reg_rostro(img, caras)
+        facialDetection(img, caras)
 
+        self.userRegister()
+
+    # Método constructor encargado de ejecutar la ventana de registro junto a su diseño:
     def __init__(self, parent):
 
         super().__init__(parent)
@@ -160,17 +157,16 @@ class FormRegisterDesigner(tk.Toplevel):
 
         reconocimientoFacial = tk.Button(frame_form_fill, text="Registrar Rostro", font=('Times', 15, BOLD),
                                          bg='#45474B', bd=0,
-                                         fg="#fff", command= self.registro_facial)
+                                         fg="#fff", command= self.facialRegistration)
         reconocimientoFacial.pack(fill=tk.X, padx=20, pady=13)
 
-        # Botón "Reconomiento de Voz":
         reconocimientoVoz = tk.Button(frame_form_fill, text="Registrar Voz", font=('Times', 15, BOLD),
                                       bg='#45474B', bd=0,
                                       fg="#fff")
         reconocimientoVoz.pack(fill=tk.X, padx=20, pady=13)
 
         register = tk.Button(frame_form_fill, text="Realizar Registro", font=('Times', 15, BOLD), bg='#45474B', bd=0,
-                             fg="#fff", command=self.registrar_usuario)
+                             fg="#fff", command=self.userRegister)
         register.pack(fill=tk.X, padx=20, pady=13)
 
         self.mainloop()
